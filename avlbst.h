@@ -303,10 +303,6 @@ void AVLTree<Key, Value>:: remove(const Key& key)
                 tallerChild = node->getLeft();
                 if (tallerChild->getBalance() >= 0) {
                     rotateRight(node);
-                    // might need to stop here
-                    if (tallerChild->getBalance() == 0) {
-                        break;
-                    }
                 } else {
                     rotateLeft(tallerChild);
                     rotateRight(node);
@@ -315,21 +311,22 @@ void AVLTree<Key, Value>:: remove(const Key& key)
                 tallerChild = node->getRight();
                 if (tallerChild->getBalance() <= 0) {
                     rotateLeft(node);
-                    if (tallerChild->getBalance() == 0) {
-                        break;
-                    }
                 } else {
                     rotateRight(tallerChild);
                     rotateLeft(node);
                 }
             }
-            
-            // keep going up
-            parent = node->getParent();
-            if (parent != NULL && parent->getParent() != NULL) {
-                removedFromLeft = (parent->getParent()->getLeft() == parent);
+            AVLNode<Key, Value>* newRoot = node->getParent();
+            if (newRoot->getBalance() == 0) {
+              parent = newRoot->getParent();
+              if (parent != NULL)
+              {
+                removedFromLeft = (parent->getLeft() == newRoot);
+              }
+              node = parent;
+            } else {
+              break;
             }
-            node = parent;
         }
     }
 }
